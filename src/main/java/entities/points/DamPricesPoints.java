@@ -24,5 +24,4 @@ public class DamPricesPoints {
     public void setPriceAmount(double priceAmount) {
         this.priceAmount = priceAmount;
     }
-
 }
