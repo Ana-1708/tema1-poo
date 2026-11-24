@@ -1,5 +1,7 @@
 package main;
 
+import java.math.BigDecimal;
+
 public class DataValidator {
     public String validateDamPrice(Double priceAmount) {
         if (priceAmount == null) {
