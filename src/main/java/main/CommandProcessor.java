@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public class CommandProcessor {
     private final DataValidator validator;
     private final MarketDataRepository repository;
@@ -20,118 +23,111 @@ public class CommandProcessor {
         this.validator = validator;
     }
 
-    public void process(CommandInput command){
+    public void process(CommandInput command, ArrayNode output){
         if("startImport".equals(command.getCommand())){
             importActive = true;
         }else if("stopImport".equals(command.getCommand())){
             importActive = false;
         }else if("import".equals(command.getCommand()) && importActive){
-            handleImport(command);
+            handleImportAndPatch(command, output);
+        }else if("patch".equals(command.getCommand())){
+           handleImportAndPatch(command, output);
         }
     }
 
-    public void handleImport (CommandInput command){
+    private void addImportWarning(ArrayNode output, CommandInput command, MarketDataInput point, String dataType, int intervalIndex, String message) {
+        ObjectNode warning = output.addObject();
+        warning.put("command", command.getCommand());
+        warning.put("timestamp", command.getTimestamp());
+        warning.put("status", "WARNING");
+        warning.put("id", dataType);
+        warning.put("date", point.date());
+        warning.put("interval", point.interval().replaceAll("\\s*-\\s*", " - "));
+        warning.put("intervalIndex", intervalIndex);
+        warning.put("message", message);
+    }
+
+    public void handleImportAndPatch (CommandInput command, ArrayNode output){
         List<MarketDataInput> importedPoints = command.getParameters().getData();
+        boolean isPatch = "patch".equals(command.getCommand());
         for (MarketDataInput point : importedPoints){
-            if("DAM_PRICE".equals(point.id())){
+            String dataType;
+            if(isPatch){
+                dataType = command.getParameters().getDataType();
+            }else{
+                dataType = point.id();
+            }
+            LocalDate date = LocalDate.parse(point.date());
+            String startText = point.interval().split("-", 2)[0].trim();
+            LocalTime start = LocalTime.parse(startText);
+            int minutes = start.getHour() * 60 + start.getMinute();
+            int intervalIndex = minutes / 15 + 1;
+
+            String message;
+
+            if("DAM_PRICE".equals(dataType)){
                 Double priceAmount = point.priceAmount();
-                String message = validator.validateDamPrice(priceAmount);
-                    if (message == null) {
-                        LocalDate date = LocalDate.parse(point.date());
-
-                        String startText = point.interval().split("-", 2)[0].trim();
-                        LocalTime start = LocalTime.parse(startText);
-                        int minutes = start.getHour() * 60 + start.getMinute();
-                        int intervalIndex = minutes / 15 + 1;
-
-                        DamPricesPoints savedPoint = new DamPricesPoints(intervalIndex, priceAmount);
-                        repository.saveDamPrices(date, savedPoint);
-                    }
-                } else if("DAM_PRICE_PREDICTION".equals(point.id())){
+                message = validator.validateDamPrice(priceAmount);
+                if(message == null){
+                    repository.saveDamPrices(date, new DamPricesPoints(intervalIndex, priceAmount));
+                }
+                } else if("DAM_PRICE_PREDICTION".equals(dataType)){
                     Double spikeProbability = point.spikeProbability();
                     Double predictedPriceEurMwh = point.predictedPriceEurMwh();
-                    String message = validator.validateDamPricesPrediction(predictedPriceEurMwh, spikeProbability);
+                    message = validator.validateDamPricesPrediction(predictedPriceEurMwh, spikeProbability);
                 if (message == null) {
-                    LocalDate date = LocalDate.parse(point.date());
-
-                    String startText = point.interval().split("-", 2)[0].trim();
-                    LocalTime start = LocalTime.parse(startText);
-                    int minutes = start.getHour() * 60 + start.getMinute();
-                    int intervalIndex = minutes / 15 + 1;
-
-                    DamPricesPredictionPoints savedPoint = new DamPricesPredictionPoints(intervalIndex, predictedPriceEurMwh, spikeProbability);
-                    repository.saveDamPricesPrediction(date, savedPoint);
+                    repository.saveDamPricesPrediction(date, new DamPricesPredictionPoints(intervalIndex, predictedPriceEurMwh, spikeProbability));
                 }
-            } else if("GRID_LOAD".equals(point.id())){
+            } else if("GRID_LOAD".equals(dataType)){
 
                 Double reservesRequiredMW = point.reservesRequiredMW();
                 BigDecimal quantity = point.quantity();
-                Double quantityDouble = quantity.doubleValue();
-                LocalDate date = LocalDate.parse(point.date());
-                String startText = point.interval().split("-", 2)[0].trim();
-                LocalTime start = LocalTime.parse(startText);
-                int minutes = start.getHour() * 60 + start.getMinute();
-                int intervalIndex = minutes / 15 + 1;
+                Double quantityDouble = quantity == null ? null : quantity.doubleValue();;
 
-                List<GridLoadPoints> list = repository.findFirstValidGridLoadPoint(date, intervalIndex);
-                for(GridLoadPoints p: list){
-                    String message = validator.validateGridLoad(quantityDouble, p.getQuantity());
-                    if(message == null){
-                        GridLoadPoints savedPoint = new GridLoadPoints(quantityDouble, intervalIndex, reservesRequiredMW);
-                        repository.saveGridLoad(date, savedPoint);
-                        break;
-                    }
+                List<GridLoadPoints> previousPoints = repository.findFirstValidGridLoadPoint(date, intervalIndex);
+                Double previousQuantity = previousPoints.isEmpty() ? null : previousPoints.get(0).getQuantity();
+                message = validator.validateGridLoad(quantityDouble, previousQuantity);
+                if (message == null) {
+                    repository.saveGridLoad(date, new GridLoadPoints(quantityDouble, intervalIndex, point.reservesRequiredMW()));
                 }
-            } else if("GRID_LOAD_PREDICTION".equals(point.id())){
+            } else if("GRID_LOAD_PREDICTION".equals(dataType)){
                 Double reservesRequiredMW = point.reservesRequiredMW();
                 BigDecimal quantity = point.quantity();
-                Double quantityDouble = quantity.doubleValue();
+                Double quantityDouble = quantity == null ? null : quantity.doubleValue();;
 
-                String message = validator.validateGridLoadPrediction(quantityDouble, reservesRequiredMW);
+                message = validator.validateGridLoadPrediction(quantityDouble, reservesRequiredMW);
                 if (message == null) {
-                    LocalDate date = LocalDate.parse(point.date());
-
-                    String startText = point.interval().split("-", 2)[0].trim();
-                    LocalTime start = LocalTime.parse(startText);
-                    int minutes = start.getHour() * 60 + start.getMinute();
-                    int intervalIndex = minutes / 15 + 1;
-
-                    GridLoadPredictionsPoints savedPoint = new GridLoadPredictionsPoints(intervalIndex, reservesRequiredMW, quantityDouble);
+                    GridLoadPredictionsPoints savedPoint = new GridLoadPredictionsPoints(intervalIndex, quantityDouble, reservesRequiredMW);
                     repository.saveGridLoadPrediction(date, savedPoint);
                 }
-            } else if("IMBALANCE_PRICE".equals(point.id())){
+            } else if("IMBALANCE_PRICE".equals(dataType)){
                 Double positiveImbalancePrice = point.positiveImbalancePrice();
                 Double negativeImbalancePrice = point.negativeImbalancePrice();
-                String message = validator.validateImbalancePrices(positiveImbalancePrice, negativeImbalancePrice);
+                message = validator.validateImbalancePrices(positiveImbalancePrice, negativeImbalancePrice);
                 if(message == null){
-                    LocalDate date = LocalDate.parse(point.date());
-
-                    String startText = point.interval().split("-", 2)[0].trim();
-                    LocalTime start = LocalTime.parse(startText);
-                    int minutes = start.getHour() * 60 + start.getMinute();
-                    int intervalIndex = minutes / 15 + 1;
-
                     ImbalacePricesPoints savedPoint = new ImbalacePricesPoints(intervalIndex, positiveImbalancePrice, negativeImbalancePrice);
                     repository.saveImbalancePrices(date, savedPoint);
                 }
-            } else if("IMBALANCE_VOLUME".equals(point.id())){
-                Double positiveImbalancePrice = point.positiveImbalancePrice();
-                Double negativeImbalancePrice = point.negativeImbalancePrice();
-                String message = validator.validateImbalancePrices(positiveImbalancePrice, negativeImbalancePrice);
+            } else if("IMBALANCE_VOLUME".equals(dataType)){
+                Double positiveImbalanceVolumes = point.positiveImbalanceVol();
+                Double negativeImbalanceVolumes = point.negativeImbalanceVol();
+                message = validator.validateImbalanceVolumes(positiveImbalanceVolumes, negativeImbalanceVolumes);
                 if(message == null){
-                    LocalDate date = LocalDate.parse(point.date());
-
-                    String startText = point.interval().split("-", 2)[0].trim();
-                    LocalTime start = LocalTime.parse(startText);
-                    int minutes = start.getHour() * 60 + start.getMinute();
-                    int intervalIndex = minutes / 15 + 1;
-
-                    ImbalanceVolumesPoints savedPoint = new ImbalanceVolumesPoints(intervalIndex, positiveImbalancePrice, negativeImbalancePrice);
+                    ImbalanceVolumesPoints savedPoint = new ImbalanceVolumesPoints(intervalIndex, positiveImbalanceVolumes, negativeImbalanceVolumes);
                     repository.saveImbalanceVolumes(date, savedPoint);
                 }
+            } else {
+                continue;
+            }
+            if(message!=null){
+                addImportWarning(output, command, point, dataType, intervalIndex, message);
             }
             }
         }
+
+
+
+
     }
 
 

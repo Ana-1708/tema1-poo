@@ -132,16 +132,21 @@ public class MarketDataRepository {
                 return document.getPoint(intervalIndex);
         }
 
-        public List<GridLoadPoints> findFirstValidGridLoadPoint(LocalDate date, int intervalIndex){
-                List<GridLoadPoints> list = new ArrayList<>();
+        public List<GridLoadPoints> findFirstValidGridLoadPoint(LocalDate date, int intervalIndex) {
+                List<GridLoadPoints> previousPoints = new ArrayList<>();
                 GridLoad document = gridLoadByDate.get(date);
-                if(document == null){
-                        return null;
+
+                if (document == null) {
+                        return previousPoints;
                 }
-                for(int interval = intervalIndex; interval >= 1; interval ++){
-                        GridLoadPoints p = document.getPoint(interval);
-                        list.add(p);
+
+                for (int interval = intervalIndex - 1; interval >= 1; interval--) {
+                        GridLoadPoints previousPoint = document.getPoint(interval);
+                        if (previousPoint != null) {
+                                previousPoints.add(previousPoint);
+                        }
                 }
-                return list;
+
+                return previousPoints;
         }
 }
