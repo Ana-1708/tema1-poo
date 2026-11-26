@@ -7,6 +7,7 @@ import fileio.MarketDataInput;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -32,19 +33,28 @@ public class CommandProcessor {
             handleImportAndPatch(command, output);
         }else if("patch".equals(command.getCommand())){
            handleImportAndPatch(command, output);
+        }else if("get".equals(command.getCommand())){
+            handleGet(command, output);
         }
     }
-
-    private void addImportWarning(ArrayNode output, CommandInput command, MarketDataInput point, String dataType, int intervalIndex, String message) {
+    private ObjectNode addWarning(ArrayNode output, CommandInput command, String message) {
         ObjectNode warning = output.addObject();
         warning.put("command", command.getCommand());
         warning.put("timestamp", command.getTimestamp());
         warning.put("status", "WARNING");
+        warning.put("message", message);
+        return warning;
+    }
+
+    private void addImportWarning(ArrayNode output, CommandInput command,
+                                  MarketDataInput point, String dataType,
+                                  int intervalIndex, String message) {
+        ObjectNode warning = addWarning(output, command, message);
+
         warning.put("id", dataType);
         warning.put("date", point.date());
         warning.put("interval", point.interval().replaceAll("\\s*-\\s*", " - "));
         warning.put("intervalIndex", intervalIndex);
-        warning.put("message", message);
     }
 
     public void handleImportAndPatch (CommandInput command, ArrayNode output){
@@ -124,6 +134,64 @@ public class CommandProcessor {
             }
             }
         }
+
+    public void handleGet (CommandInput command, ArrayNode output){
+
+        String target = command.getParameters().getTarget();
+        String dataType = command.getParameters().getDataType();
+        String clientTier = command.getParameters().getClientTier();
+
+        if(target != null && !"LATEST".equals(target)) {
+            LocalDateTime intervalStart = LocalDateTime.parse(target);
+            LocalDate date = intervalStart.toLocalDate();
+            int minutes = intervalStart.getHour() * 60 + intervalStart.getMinute();
+            int intervalIndex = minutes / 15 + 1;
+
+            if(dataType.equals("DAM_PRICE")) {
+                DamPricesPoints point = repository.findDamPrices(date, intervalIndex);
+                if(point == null) {
+                    addGetWarning(output, command, intervalStart, intervalStart.plusDays(15));
+                } else{
+                    ObjectNode interval = addSinglePointSuccess(output, command, dataType, intervalStart, intervalStart.plusMinutes(15),
+                                            intervalIndex);
+                    interval.put("priceAmount", point.getPriceAmount());
+                }
+            }
+        }
+    }
+
+    private void addGetWarning(ArrayNode output, CommandInput command,
+                               LocalDateTime from, LocalDateTime to) {
+        ObjectNode warning = addWarning(
+                output, command, "Data is not yet available. Try again later.");
+
+        warning.put("from", from.toString());
+        warning.put("to", to.toString());
+        warning.putNull("data");
+    }
+
+    private ObjectNode addSinglePointSuccess(ArrayNode output, CommandInput command,
+                                             String dataType, LocalDateTime from,
+                                             LocalDateTime to, int intervalIndex) {
+        ObjectNode response = output.addObject();
+        response.put("command", command.getCommand());
+        response.put("timestamp", command.getTimestamp());
+        response.put("status", "SUCCESS");
+        response.put("from", from.toString());
+        response.put("to", to.toString());
+
+        ArrayNode days = response.putArray("data");
+        ObjectNode day = days.addObject();
+        day.put("id", dataType);
+        day.put("date", from.toLocalDate().toString());
+
+        ArrayNode intervals = day.putArray("data");
+        ObjectNode interval = intervals.addObject();
+        interval.put("interval", from.toLocalTime() + " - " + to.toLocalTime());
+        interval.put("intervalIndex", intervalIndex);
+
+        return interval;
+    }
 
 
 
