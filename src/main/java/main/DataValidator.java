@@ -29,7 +29,7 @@ public final class DataValidator {
      * Validates a DAM price prediction.
      *
      * @param predictedPriceEurMwh the predicted price to check
-     * @param spikeProbability the spike probability to check
+     * @param spikeProbability     the spike probability to check
      * @return the warning message, or null if the values are valid
      */
     public String validateDamPricesPrediction(final Double predictedPriceEurMwh,
@@ -58,7 +58,7 @@ public final class DataValidator {
     /**
      * Validates a grid load prediction.
      *
-     * @param quantity the predicted quantity to check
+     * @param quantity           the predicted quantity to check
      * @param reservesRequiredMW the required reserves to check
      * @return the warning message, or null if the values are valid
      */
@@ -150,7 +150,7 @@ public final class DataValidator {
     /**
      * Validates a grid load value against the previous interval.
      *
-     * @param quantity the quantity to check
+     * @param quantity         the quantity to check
      * @param previousQuantity the quantity of the previous interval, or null
      * @return the warning message, or null if the value is valid
      */

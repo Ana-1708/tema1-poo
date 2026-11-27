@@ -29,7 +29,7 @@ public final class CommandProcessor {
     /**
      * Creates a command processor.
      *
-     * @param validator the validator used for imported data
+     * @param validator  the validator used for imported data
      * @param repository the repository where data is stored
      */
     public CommandProcessor(final DataValidator validator,
@@ -42,7 +42,7 @@ public final class CommandProcessor {
      * Processes a single command and writes the result to the output.
      *
      * @param command the command to process
-     * @param output the output array
+     * @param output  the output array
      */
     public void process(final CommandInput command, final ArrayNode output) {
         if ("startImport".equals(command.getCommand())) {
@@ -83,7 +83,7 @@ public final class CommandProcessor {
      * Handles an import or patch command: validates each point and saves the valid ones.
      *
      * @param command the import or patch command
-     * @param output the output array
+     * @param output  the output array
      */
     public void handleImportAndPatch(final CommandInput command, final ArrayNode output) {
         List<MarketDataInput> importedPoints = command.getParameters().getData();
@@ -172,7 +172,7 @@ public final class CommandProcessor {
                 continue;
             }
             if (message != null) {
-                if(!isPatch){
+                if (!isPatch) {
                     repository.clearPoint(dataType, date, intervalIndex);
                 }
                 addImportWarning(output, command, point, dataType, intervalIndex, message);
@@ -260,7 +260,7 @@ public final class CommandProcessor {
      * Handles a get command for the latest interval, a single interval or a range.
      *
      * @param command the get command
-     * @param output the output array
+     * @param output  the output array
      */
     public void handleGet(final CommandInput command, final ArrayNode output) {
         String target = command.getParameters().getTarget();
