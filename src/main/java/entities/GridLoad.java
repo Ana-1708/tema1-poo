@@ -2,10 +2,10 @@ package entities;
 
 import entities.points.GridLoadPoints;
 
-public class GridLoad extends DailyDocument<GridLoadPoints> {
-    String quantityMeasureUnit;
+public final class GridLoad extends DailyDocument<GridLoadPoints> {
+    private String quantityMeasureUnit;
 
-    public GridLoad(String quantityMeasureUnit) {
+    public GridLoad(final String quantityMeasureUnit) {
         this.quantityMeasureUnit = quantityMeasureUnit;
     }
 
@@ -13,7 +13,7 @@ public class GridLoad extends DailyDocument<GridLoadPoints> {
         return quantityMeasureUnit;
     }
 
-    public void setQuantityMeasureUnit(String quantityMeasureUnit) {
+    public void setQuantityMeasureUnit(final String quantityMeasureUnit) {
         this.quantityMeasureUnit = quantityMeasureUnit;
     }
 }

@@ -1,12 +1,13 @@
 package entities.points;
 
-public class ImbalacePricesPoints {
+public final class ImbalacePricesPoints {
 
     private int intervalIndex;
     private double positiveImbalancePrice;
     private double negativeImbalancePrice;
 
-    public ImbalacePricesPoints(int intervalIndex, double positiveImbalancePrice, double negativeImbalancePrice) {
+    public ImbalacePricesPoints(final int intervalIndex, final double positiveImbalancePrice,
+                                final double negativeImbalancePrice) {
         this.intervalIndex = intervalIndex;
         this.positiveImbalancePrice = positiveImbalancePrice;
         this.negativeImbalancePrice = negativeImbalancePrice;
@@ -16,7 +17,7 @@ public class ImbalacePricesPoints {
         return intervalIndex;
     }
 
-    public void setIntervalIndex(int intervalIndex) {
+    public void setIntervalIndex(final int intervalIndex) {
         this.intervalIndex = intervalIndex;
     }
 
@@ -24,7 +25,7 @@ public class ImbalacePricesPoints {
         return positiveImbalancePrice;
     }
 
-    public void setPositiveImbalancePrice(double positiveImbalancePrice) {
+    public void setPositiveImbalancePrice(final double positiveImbalancePrice) {
         this.positiveImbalancePrice = positiveImbalancePrice;
     }
 
@@ -32,7 +33,7 @@ public class ImbalacePricesPoints {
         return negativeImbalancePrice;
     }
 
-    public void setNegativeImbalancePrice(double negativeImbalancePrice) {
+    public void setNegativeImbalancePrice(final double negativeImbalancePrice) {
         this.negativeImbalancePrice = negativeImbalancePrice;
     }
 }

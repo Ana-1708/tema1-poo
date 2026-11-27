@@ -1,10 +1,10 @@
 package entities.points;
 
-public class DamPricesPoints {
+public final class DamPricesPoints {
     private int intervalIndex;
     private double priceAmount;
 
-    public DamPricesPoints(int intervalIndex, double priceAmount) {
+    public DamPricesPoints(final int intervalIndex, final double priceAmount) {
         this.intervalIndex = intervalIndex;
         this.priceAmount = priceAmount;
     }
@@ -13,7 +13,7 @@ public class DamPricesPoints {
         return intervalIndex;
     }
 
-    public void setIntervalIndex(int intervalIndex) {
+    public void setIntervalIndex(final int intervalIndex) {
         this.intervalIndex = intervalIndex;
     }
 
@@ -21,7 +21,7 @@ public class DamPricesPoints {
         return priceAmount;
     }
 
-    public void setPriceAmount(double priceAmount) {
+    public void setPriceAmount(final double priceAmount) {
         this.priceAmount = priceAmount;
     }
 }

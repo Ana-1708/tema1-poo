@@ -1,11 +1,12 @@
 package entities.points;
 
-public class ImbalanceVolumesPoints {
+public final class ImbalanceVolumesPoints {
     private int intervalIndex;
     private double positiveImbalanceVol;
     private double negativeImbalanceVol;
 
-    public ImbalanceVolumesPoints(int intervalIndex, double positiveImbalanceVol, double negativeImbalanceVol) {
+    public ImbalanceVolumesPoints(final int intervalIndex, final double positiveImbalanceVol,
+                                  final double negativeImbalanceVol) {
         this.intervalIndex = intervalIndex;
         this.positiveImbalanceVol = positiveImbalanceVol;
         this.negativeImbalanceVol = negativeImbalanceVol;
@@ -15,7 +16,7 @@ public class ImbalanceVolumesPoints {
         return intervalIndex;
     }
 
-    public void setIntervalIndex(int intervalIndex) {
+    public void setIntervalIndex(final int intervalIndex) {
         this.intervalIndex = intervalIndex;
     }
 
@@ -23,7 +24,7 @@ public class ImbalanceVolumesPoints {
         return positiveImbalanceVol;
     }
 
-    public void setPositiveImbalanceVol(double positiveImbalanceVol) {
+    public void setPositiveImbalanceVol(final double positiveImbalanceVol) {
         this.positiveImbalanceVol = positiveImbalanceVol;
     }
 
@@ -31,7 +32,7 @@ public class ImbalanceVolumesPoints {
         return negativeImbalanceVol;
     }
 
-    public void setNegativeImbalanceVol(double negativeImbalanceVol) {
+    public void setNegativeImbalanceVol(final double negativeImbalanceVol) {
         this.negativeImbalanceVol = negativeImbalanceVol;
     }
 }

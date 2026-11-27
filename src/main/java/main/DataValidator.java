@@ -1,14 +1,23 @@
 package main;
 
-import java.math.BigDecimal;
+public final class DataValidator {
+    private static final int MIN_DAM_PRICE = -500;
+    private static final int MAX_DAM_PRICE = 4000;
+    private static final int MAX_IMBALANCE_PRICE = 15_000;
+    private static final int MAX_GRID_LOAD_CHANGE = 10_000;
 
-public class DataValidator {
-    public String validateDamPrice(Double priceAmount) {
+    /**
+     * Validates a DAM price value.
+     *
+     * @param priceAmount the price to check
+     * @return the warning message, or null if the value is valid
+     */
+    public String validateDamPrice(final Double priceAmount) {
         if (priceAmount == null) {
             return "PriceAmount is null; interval skipped.";
         }
 
-        if (priceAmount < -500 || priceAmount > 4000) {
+        if (priceAmount < MIN_DAM_PRICE || priceAmount > MAX_DAM_PRICE) {
             return "PriceAmount " + priceAmount
                     + " is outside the market range [-500, 4000] EUR/MWh; interval skipped.";
         }
@@ -16,8 +25,15 @@ public class DataValidator {
         return null;
     }
 
-    public String validateDamPricesPrediction(Double predictedPriceEurMwh,
-                                              Double spikeProbability) {
+    /**
+     * Validates a DAM price prediction.
+     *
+     * @param predictedPriceEurMwh the predicted price to check
+     * @param spikeProbability the spike probability to check
+     * @return the warning message, or null if the values are valid
+     */
+    public String validateDamPricesPrediction(final Double predictedPriceEurMwh,
+                                              final Double spikeProbability) {
         if (predictedPriceEurMwh == null) {
             return "PredictedPriceEurMwh is null; interval skipped.";
         }
@@ -26,7 +42,7 @@ public class DataValidator {
             return "SpikeProbability is null; interval skipped.";
         }
 
-        if (predictedPriceEurMwh < -500 || predictedPriceEurMwh > 4000) {
+        if (predictedPriceEurMwh < MIN_DAM_PRICE || predictedPriceEurMwh > MAX_DAM_PRICE) {
             return "PredictedPriceEurMwh " + predictedPriceEurMwh
                     + " is outside the market range [-500, 4000] EUR/MWh; interval skipped.";
         }
@@ -39,7 +55,15 @@ public class DataValidator {
         return null;
     }
 
-    public String validateGridLoadPrediction(Double quantity, Double reservesRequiredMW) {
+    /**
+     * Validates a grid load prediction.
+     *
+     * @param quantity the predicted quantity to check
+     * @param reservesRequiredMW the required reserves to check
+     * @return the warning message, or null if the values are valid
+     */
+    public String validateGridLoadPrediction(final Double quantity,
+                                             final Double reservesRequiredMW) {
         if (quantity == null) {
             return "Quantity is null; interval skipped.";
         }
@@ -61,8 +85,15 @@ public class DataValidator {
         return null;
     }
 
-    public String validateImbalancePrices(Double positiveImbalancePrice,
-                                          Double negativeImbalancePrice) {
+    /**
+     * Validates imbalance prices.
+     *
+     * @param positiveImbalancePrice the positive imbalance price to check
+     * @param negativeImbalancePrice the negative imbalance price to check
+     * @return the warning message, or null if the values are valid
+     */
+    public String validateImbalancePrices(final Double positiveImbalancePrice,
+                                          final Double negativeImbalancePrice) {
         if (positiveImbalancePrice == null) {
             return "PositiveImbalancePrice is null; interval skipped.";
         }
@@ -71,12 +102,14 @@ public class DataValidator {
             return "NegativeImbalancePrice is null; interval skipped.";
         }
 
-        if (positiveImbalancePrice < -15_000 || positiveImbalancePrice > 15_000) {
+        if (positiveImbalancePrice < -MAX_IMBALANCE_PRICE
+                || positiveImbalancePrice > MAX_IMBALANCE_PRICE) {
             return "PositiveImbalancePrice " + positiveImbalancePrice
                     + " exceeds the maximum allowed value 15000 EUR/MWh; interval skipped.";
         }
 
-        if (negativeImbalancePrice < -15_000 || negativeImbalancePrice > 15_000) {
+        if (negativeImbalancePrice < -MAX_IMBALANCE_PRICE
+                || negativeImbalancePrice > MAX_IMBALANCE_PRICE) {
             return "NegativeImbalancePrice " + negativeImbalancePrice
                     + " exceeds the maximum allowed value 15000 EUR/MWh; interval skipped.";
         }
@@ -84,8 +117,15 @@ public class DataValidator {
         return null;
     }
 
-    public String validateImbalanceVolumes(Double positiveImbalanceVol,
-                                           Double negativeImbalanceVol) {
+    /**
+     * Validates imbalance volumes.
+     *
+     * @param positiveImbalanceVol the positive imbalance volume to check
+     * @param negativeImbalanceVol the negative imbalance volume to check
+     * @return the warning message, or null if the values are valid
+     */
+    public String validateImbalanceVolumes(final Double positiveImbalanceVol,
+                                           final Double negativeImbalanceVol) {
         if (positiveImbalanceVol == null) {
             return "PositiveImbalanceVol is null; interval skipped.";
         }
@@ -107,7 +147,14 @@ public class DataValidator {
         return null;
     }
 
-    public String validateGridLoad(Double quantity, Double previousQuantity) {
+    /**
+     * Validates a grid load value against the previous interval.
+     *
+     * @param quantity the quantity to check
+     * @param previousQuantity the quantity of the previous interval, or null
+     * @return the warning message, or null if the value is valid
+     */
+    public String validateGridLoad(final Double quantity, final Double previousQuantity) {
         if (quantity == null) {
             return "Quantity is null; interval skipped.";
         }
@@ -118,7 +165,7 @@ public class DataValidator {
         }
 
         if (previousQuantity != null
-                && Math.abs(quantity - previousQuantity) > 10_000) {
+                && Math.abs(quantity - previousQuantity) > MAX_GRID_LOAD_CHANGE) {
             return "Quantity change exceeds 10000 MW compared with the previous interval;"
                     + " interval skipped.";
         }

@@ -2,11 +2,11 @@ package entities;
 
 import entities.points.DamPricesPredictionPoints;
 
-public class DamPricesPrediction extends DailyDocument<DamPricesPredictionPoints> {
+public final class DamPricesPrediction extends DailyDocument<DamPricesPredictionPoints> {
     private String currencyUnit;
     private String priceMeasureUnit;
 
-    public DamPricesPrediction(String currencyUnit, String priceMeasureUnit) {
+    public DamPricesPrediction(final String currencyUnit, final String priceMeasureUnit) {
         this.currencyUnit = currencyUnit;
         this.priceMeasureUnit = priceMeasureUnit;
     }
@@ -15,7 +15,7 @@ public class DamPricesPrediction extends DailyDocument<DamPricesPredictionPoints
         return currencyUnit;
     }
 
-    public void setCurrencyUnit(String currencyUnit) {
+    public void setCurrencyUnit(final String currencyUnit) {
         this.currencyUnit = currencyUnit;
     }
 
@@ -23,7 +23,7 @@ public class DamPricesPrediction extends DailyDocument<DamPricesPredictionPoints
         return priceMeasureUnit;
     }
 
-    public void setPriceMeasureUnit(String priceMeasureUnit) {
+    public void setPriceMeasureUnit(final String priceMeasureUnit) {
         this.priceMeasureUnit = priceMeasureUnit;
     }
 }

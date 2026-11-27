@@ -2,10 +2,10 @@ package entities;
 
 import entities.points.GridLoadPredictionsPoints;
 
-public class GridLoadPrediction extends DailyDocument<GridLoadPredictionsPoints>{
+public final class GridLoadPrediction extends DailyDocument<GridLoadPredictionsPoints> {
     private String quantityMeasureUnit;
 
-    public GridLoadPrediction(String quantityMeasureUnit) {
+    public GridLoadPrediction(final String quantityMeasureUnit) {
         this.quantityMeasureUnit = quantityMeasureUnit;
     }
 
@@ -13,7 +13,7 @@ public class GridLoadPrediction extends DailyDocument<GridLoadPredictionsPoints>
         return quantityMeasureUnit;
     }
 
-    public void setQuantityMeasureUnit(String quantityMeasureUnit) {
+    public void setQuantityMeasureUnit(final String quantityMeasureUnit) {
         this.quantityMeasureUnit = quantityMeasureUnit;
     }
 }

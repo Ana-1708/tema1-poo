@@ -2,11 +2,11 @@ package entities;
 
 import entities.points.ImbalacePricesPoints;
 
-public class ImbalancePrices extends DailyDocument<ImbalacePricesPoints> {
+public final class ImbalancePrices extends DailyDocument<ImbalacePricesPoints> {
     private String currencyUnit;
     private String priceMeasurment;
 
-    public ImbalancePrices(String currencyUnit, String priceMeasurment) {
+    public ImbalancePrices(final String currencyUnit, final String priceMeasurment) {
         this.currencyUnit = currencyUnit;
         this.priceMeasurment = priceMeasurment;
     }
@@ -15,7 +15,7 @@ public class ImbalancePrices extends DailyDocument<ImbalacePricesPoints> {
         return currencyUnit;
     }
 
-    public void setCurrencyUnit(String currencyUnit) {
+    public void setCurrencyUnit(final String currencyUnit) {
         this.currencyUnit = currencyUnit;
     }
 
@@ -23,7 +23,7 @@ public class ImbalancePrices extends DailyDocument<ImbalacePricesPoints> {
         return priceMeasurment;
     }
 
-    public void setPriceMeasurment(String priceMeasurment) {
+    public void setPriceMeasurment(final String priceMeasurment) {
         this.priceMeasurment = priceMeasurment;
     }
 }

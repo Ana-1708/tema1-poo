@@ -1,12 +1,11 @@
 package entities;
 
-import entities.points.ImbalacePricesPoints;
 import entities.points.ImbalanceVolumesPoints;
 
-public class ImbalanceVolumes extends DailyDocument<ImbalanceVolumesPoints> {
+public final class ImbalanceVolumes extends DailyDocument<ImbalanceVolumesPoints> {
     private String quantityMeasureUnit;
 
-    public ImbalanceVolumes(String quantityMeasureUnit) {
+    public ImbalanceVolumes(final String quantityMeasureUnit) {
         this.quantityMeasureUnit = quantityMeasureUnit;
     }
 
@@ -14,7 +13,7 @@ public class ImbalanceVolumes extends DailyDocument<ImbalanceVolumesPoints> {
         return quantityMeasureUnit;
     }
 
-    public void setQuantityMeasureUnit(String quantityMeasureUnit) {
+    public void setQuantityMeasureUnit(final String quantityMeasureUnit) {
         this.quantityMeasureUnit = quantityMeasureUnit;
     }
 }

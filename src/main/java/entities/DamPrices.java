@@ -3,13 +3,11 @@ package entities;
 
 import entities.points.DamPricesPoints;
 
-import java.time.ZonedDateTime;
-
-public class DamPrices extends DailyDocument<DamPricesPoints>{
+public final class DamPrices extends DailyDocument<DamPricesPoints> {
     private String currencyUnit;
     private String priceMeasureUnit;
 
-    public DamPrices(String currencyUnit, String priceMeasureUnit) {
+    public DamPrices(final String currencyUnit, final String priceMeasureUnit) {
         this.currencyUnit = currencyUnit;
         this.priceMeasureUnit = priceMeasureUnit;
     }
@@ -18,7 +16,7 @@ public class DamPrices extends DailyDocument<DamPricesPoints>{
         return currencyUnit;
     }
 
-    public void setCurrencyUnit(String currencyUnit) {
+    public void setCurrencyUnit(final String currencyUnit) {
         this.currencyUnit = currencyUnit;
     }
 
@@ -26,7 +24,7 @@ public class DamPrices extends DailyDocument<DamPricesPoints>{
         return priceMeasureUnit;
     }
 
-    public void setPriceMeasureUnit(String priceMeasureUnit) {
+    public void setPriceMeasureUnit(final String priceMeasureUnit) {
         this.priceMeasureUnit = priceMeasureUnit;
     }
 }

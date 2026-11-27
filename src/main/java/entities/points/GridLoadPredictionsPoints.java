@@ -1,11 +1,12 @@
 package entities.points;
 
-public class GridLoadPredictionsPoints {
+public final class GridLoadPredictionsPoints {
     private int intervalIndex;
     private double quantity;
     private double reservesRequiredMW;
 
-    public GridLoadPredictionsPoints(int intervalIndex, double quantity, double reservesRequiredMW) {
+    public GridLoadPredictionsPoints(final int intervalIndex, final double quantity,
+                                     final double reservesRequiredMW) {
         this.intervalIndex = intervalIndex;
         this.quantity = quantity;
         this.reservesRequiredMW = reservesRequiredMW;
@@ -15,7 +16,7 @@ public class GridLoadPredictionsPoints {
         return intervalIndex;
     }
 
-    public void setIntervalIndex(int intervalIndex) {
+    public void setIntervalIndex(final int intervalIndex) {
         this.intervalIndex = intervalIndex;
     }
 
@@ -23,7 +24,7 @@ public class GridLoadPredictionsPoints {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(final double quantity) {
         this.quantity = quantity;
     }
 
@@ -31,7 +32,7 @@ public class GridLoadPredictionsPoints {
         return reservesRequiredMW;
     }
 
-    public void setReservesRequiredMW(double reservesRequiredMW) {
+    public void setReservesRequiredMW(final double reservesRequiredMW) {
         this.reservesRequiredMW = reservesRequiredMW;
     }
 }
